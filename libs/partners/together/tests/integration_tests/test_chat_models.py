@@ -1,3 +1,5 @@
+import json
+
 import pytest  # type: ignore[import-not-found]
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
@@ -134,3 +136,21 @@ def test_invoke() -> None:
 
     result = llm.invoke("I'm Pickle Rick", config=dict(tags=["foo"]))
     assert isinstance(result.content, str)
+
+
+def test_json_mode() -> None:
+    llm = ChatTogether()
+    response = llm.invoke(
+        "Return this as json: {'a': 1}", response_format={"type": "json_object"}
+    )
+    assert isinstance(response.content, str)
+    assert json.loads(response.content) == {"a": 1}
+
+
+async def test_json_mode_async() -> None:
+    llm = ChatTogether()
+    response = await llm.ainvoke(
+        "Return this as json: {'a': 1}", response_format={"type": "json_object"}
+    )
+    assert isinstance(response.content, str)
+    assert json.loads(response.content) == {"a": 1}
